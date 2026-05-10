@@ -1,0 +1,46 @@
+
+bundle:
+  name: dab_tutorial
+  uuid: 32441799-3d63-4a0a-99b5-3281433867da
+
+include:
+  - resources/*.yml
+  - resource/*/*.yml
+
+
+# Variable declarations. These variables are assigned in the dev/prod targets below.
+variables:
+  catalog:
+    description: The catalog to use
+  schema:
+    description: The schema to use
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: dbc-7bddbb4a-05e2.cloud.databricks.com
+    permissions:
+      - group_name: admins
+        level: CAN_MANAGE
+    presets:
+      name_prefix: ${workspace.current_user.short_name}
+      source_linked_deployment: false
+    variables:
+      catalog: Databricks_Bootcamp
+      schema: dev
+  prod:
+    mode: production
+    workspace:
+      host: dbc-7bddbb4a-05e2.cloud.databricks.com
+      # We explicitly deploy to /Workspace/Users/assasikumar@deloitte.com to make sure we only have a single copy.
+      root_path: /Workspace/Prod/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: Databricks_Bootcamp
+      schema: prod
+    permissions:
+      - user_name: assasikumar@deloitte.com
+        level: CAN_MANAGE
+      - group_name: admins
+        level: CAN_RUN
